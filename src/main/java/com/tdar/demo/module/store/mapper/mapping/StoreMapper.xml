@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tdar.demo.module.store.mapper.StoreMapper">
+    <sql id="Base_Column_List">
+        id, name, address, ctime, mtime, is_active as "isActive"
+    </sql>
+
+    <select id="getRowCount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM tdar_store
+        WHERE is_del=0 AND is_active=1
+    </select>
+
+    <!-- 这里需要使用resultType而不是resultMap -->
+    <select id="getManyByParam" resultType="com.tdar.demo.module.store.dto.result.StoreResult">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM tdar_store
+        WHERE is_del=0 AND is_active=1
+        LIMIT #{paramCondition.startIndex}, #{paramCondition.rowCountPerPage}
+    </select>
+
+    <!-- 这里需要使用resultType而不是resultMap -->
+    <select id="getOneById" parameterType="java.lang.Long" resultType="com.tdar.demo.module.store.dto.result.StoreResult" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM tdar_store
+        WHERE id = #{id}
+    </select>
+
+    <!-- 有时不需要显式设置parameterType，mybatis可以自动识别getMany()方法的参数 -->
+    <select id="getMany" resultType="map" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM tdar_store
+        WHERE is_del=0 AND is_active=1
+        LIMIT #{paramCondition.startIndex}, #{paramCondition.rowCountPerPage}
+    </select>
+
+    <!-- 有时不需要显式设置parameterType，mybatis可以自动识别getOne()方法的参数 -->
+    <select id="getEntityById" resultType="com.tdar.demo.module.store.entity.Store" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM tdar_store
+        WHERE id = #{pk}
+    </select>
+
+    <select id="getOne" resultType="map" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM tdar_store
+        WHERE id = #{pk}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+       INSERT INTO
+            tdar_store
+            (name, address, ctime, mtime, is_active)
+        VALUES
+            (#{store.name}, #{store.address}, #{store.ctime}, #{store.mtime}, #{store.isActive})
+    </insert>
+
+    <update id="update" parameterType="com.tdar.demo.module.store.entity.Store" >
+        UPDATE
+            tdar_store
+        SET
+            name = #{name},
+            address = #{address},
+            mtime = #{mtime}
+        WHERE
+            id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        DELETE FROM
+            tdar_store
+        WHERE
+            id = #{id}
+    </delete>
+</mapper>
